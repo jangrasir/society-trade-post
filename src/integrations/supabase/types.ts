@@ -65,7 +65,7 @@ export type Database = {
       }
       items: {
         Row: {
-          category: Database["public"]["Enums"]["item_category"]
+          category: Database["public"]["Enums"]["item_name"]
           created_at: string
           description: string
           id: string
@@ -77,7 +77,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          category: Database["public"]["Enums"]["item_category"]
+          category: Database["public"]["Enums"]["item_name"]
           created_at?: string
           description: string
           id?: string
@@ -89,7 +89,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          category?: Database["public"]["Enums"]["item_category"]
+          category?: Database["public"]["Enums"]["item_name"]
           created_at?: string
           description?: string
           id?: string
@@ -226,12 +226,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      item_category:
+      item_name:
         | "electronics"
         | "furniture"
         | "clothing"
         | "books"
         | "miscellaneous"
+        | "washing machine"
       item_status: "available" | "sold" | "pending"
     }
     CompositeTypes: {
@@ -360,12 +361,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      item_category: [
+      item_name: [
         "electronics",
         "furniture",
         "clothing",
         "books",
         "miscellaneous",
+        "washing machine",
       ],
       item_status: ["available", "sold", "pending"],
     },
