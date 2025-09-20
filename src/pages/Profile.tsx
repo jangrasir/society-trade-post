@@ -8,6 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from 'lucide-react';
+import { 
+  sanitizeInput, 
+  validateName, 
+  validatePhone,
+  containsSuspiciousPatterns 
+} from '@/lib/security';
 
 export default function Profile() {
   const [fullName, setFullName] = useState('');
@@ -51,15 +57,52 @@ export default function Profile() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate and sanitize inputs
+    const sanitizedFullName = sanitizeInput(fullName);
+    const sanitizedHostelPgSociety = sanitizeInput(hostelPgSociety);
+    const sanitizedContactPhone = sanitizeInput(contactPhone);
+    
+    // Validate inputs
+    if (!validateName(sanitizedFullName)) {
+      toast({
+        title: 'Invalid name',
+        description: 'Name can only contain letters, spaces, dots, hyphens, and apostrophes',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (sanitizedContactPhone && !validatePhone(sanitizedContactPhone)) {
+      toast({
+        title: 'Invalid phone number',
+        description: 'Please enter a valid phone number',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    // Check for suspicious patterns
+    if (containsSuspiciousPatterns(sanitizedFullName) || 
+        containsSuspiciousPatterns(sanitizedHostelPgSociety) || 
+        containsSuspiciousPatterns(sanitizedContactPhone)) {
+      toast({
+        title: 'Invalid input',
+        description: 'Please check your input and try again',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     setLoading(true);
 
     try {
       const { error } = await supabase
         .from('profiles')
         .update({
-          full_name: fullName,
-          hostel_pg_society: hostelPgSociety,
-          contact_phone: contactPhone,
+          full_name: sanitizedFullName,
+          hostel_pg_society: sanitizedHostelPgSociety,
+          contact_phone: sanitizedContactPhone,
         })
         .eq('user_id', user.id);
 

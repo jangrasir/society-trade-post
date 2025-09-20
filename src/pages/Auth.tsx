@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useRateLimit } from '@/hooks/useRateLimit';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,6 +9,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { ShoppingBag } from 'lucide-react';
+import { 
+  sanitizeInput, 
+  validateEmail, 
+  validateName, 
+  validatePasswordStrength,
+  containsSuspiciousPatterns 
+} from '@/lib/security';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -17,6 +25,13 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
+  
+  // Rate limiting for auth attempts
+  const authRateLimit = useRateLimit({
+    maxAttempts: 5,
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    blockDurationMs: 30 * 60 * 1000, // 30 minutes
+  });
 
   // Redirect if already authenticated
   if (user) {
@@ -26,9 +41,41 @@ export default function Auth() {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check rate limit
+    if (!authRateLimit.checkRateLimit()) {
+      toast({
+        title: 'Too many attempts',
+        description: `Please wait before trying again. ${authRateLimit.getRemainingAttempts()} attempts remaining.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    // Validate and sanitize inputs
+    const sanitizedEmail = sanitizeInput(email);
+    const sanitizedPassword = password; // Don't sanitize password as it may contain special chars
+    
+    if (!validateEmail(sanitizedEmail)) {
+      toast({
+        title: 'Invalid email',
+        description: 'Please enter a valid email address',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (containsSuspiciousPatterns(sanitizedEmail)) {
+      toast({
+        title: 'Invalid input',
+        description: 'Please check your input and try again',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     setLoading(true);
-
-    const { error } = await signIn(email, password);
+    const { error } = await signIn(sanitizedEmail, sanitizedPassword);
 
     if (error) {
       toast({
@@ -49,19 +96,74 @@ export default function Auth() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-
-    if (!fullName || !hostelPgSociety) {
+    
+    // Check rate limit
+    if (!authRateLimit.checkRateLimit()) {
+      toast({
+        title: 'Too many attempts',
+        description: `Please wait before trying again. ${authRateLimit.getRemainingAttempts()} attempts remaining.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    // Validate and sanitize inputs
+    const sanitizedEmail = sanitizeInput(email);
+    const sanitizedFullName = sanitizeInput(fullName);
+    const sanitizedHostelPgSociety = sanitizeInput(hostelPgSociety);
+    
+    if (!sanitizedFullName || !sanitizedHostelPgSociety) {
       toast({
         title: 'Error',
         description: 'Please fill in all fields',
         variant: 'destructive',
       });
-      setLoading(false);
       return;
     }
-
-    const { error } = await signUp(email, password, fullName, hostelPgSociety);
+    
+    // Validate inputs
+    if (!validateEmail(sanitizedEmail)) {
+      toast({
+        title: 'Invalid email',
+        description: 'Please enter a valid email address',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (!validateName(sanitizedFullName)) {
+      toast({
+        title: 'Invalid name',
+        description: 'Name can only contain letters, spaces, dots, hyphens, and apostrophes',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    const passwordValidation = validatePasswordStrength(password);
+    if (!passwordValidation.isValid) {
+      toast({
+        title: 'Weak password',
+        description: passwordValidation.message,
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    // Check for suspicious patterns
+    if (containsSuspiciousPatterns(sanitizedEmail) || 
+        containsSuspiciousPatterns(sanitizedFullName) || 
+        containsSuspiciousPatterns(sanitizedHostelPgSociety)) {
+      toast({
+        title: 'Invalid input',
+        description: 'Please check your input and try again',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    setLoading(true);
+    const { error } = await signUp(sanitizedEmail, password, sanitizedFullName, sanitizedHostelPgSociety);
 
     if (error) {
       toast({
