@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface ItemCardProps {
   item: {
@@ -30,6 +31,7 @@ interface ItemCardProps {
 
 export function ItemCard({ item, isWishlisted = false, onWishlistChange, onChatClick }: ItemCardProps) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [wishlistLoading, setWishlistLoading] = useState(false);
 
   const handleWishlistToggle = async () => {
@@ -119,17 +121,22 @@ export function ItemCard({ item, isWishlisted = false, onWishlistChange, onChatC
   return (
     <Card className="h-full flex flex-col">
       <CardContent className="p-0">
-        {item.images && item.images.length > 0 ? (
-          <img
-            src={`${supabase.storage.from('item-images').getPublicUrl(item.images[0]).data.publicUrl}`}
-            alt={item.title}
-            className="w-full h-48 object-cover rounded-t-lg"
-          />
-        ) : (
-          <div className="w-full h-48 bg-muted flex items-center justify-center rounded-t-lg">
-            <span className="text-muted-foreground">No image</span>
-          </div>
-        )}
+        <div 
+          className="cursor-pointer" 
+          onClick={() => navigate(`/item/${item.id}`)}
+        >
+          {item.images && item.images.length > 0 ? (
+            <img
+              src={`${supabase.storage.from('item-images').getPublicUrl(item.images[0]).data.publicUrl}`}
+              alt={item.title}
+              className="w-full h-48 object-cover rounded-t-lg hover:opacity-90 transition-opacity"
+            />
+          ) : (
+            <div className="w-full h-48 bg-muted flex items-center justify-center rounded-t-lg hover:bg-muted/80 transition-colors">
+              <span className="text-muted-foreground">No image</span>
+            </div>
+          )}
+        </div>
         
         <div className="p-4 space-y-3">
           <div className="flex justify-between items-start">
