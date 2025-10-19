@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import { ChevronLeft, ChevronRight, Play, Info } from 'lucide-react';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const categories = [
   { id: 'all', name: 'All', icon: '🛍️' },
@@ -21,6 +23,7 @@ export default function Home() {
   const [wishlistedItems, setWishlistedItems] = useState<Set<string>>(new Set());
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [featuredItem, setFeaturedItem] = useState<any>(null);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -30,6 +33,12 @@ export default function Home() {
       fetchWishlists();
     }
   }, [selectedCategory, user]);
+
+  useEffect(() => {
+    if (items.length > 0 && !featuredItem) {
+      setFeaturedItem(items[0]);
+    }
+  }, [items]);
 
   const fetchItems = async () => {
     setLoading(true);
@@ -122,36 +131,79 @@ export default function Home() {
     }
   };
 
+  const getCategoryItems = (categoryId: string) => {
+    if (categoryId === 'all') return items;
+    return items.filter(item => item.category === categoryId);
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="gradient-hero text-white py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjEiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-30"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in-up">
-            Welcome to <span className="bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">SocietyMart</span>
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 text-primary-foreground/90 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
-            Your exclusive marketplace for PG, hostel & society members
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-            {user ? (
-              <Button asChild size="lg" variant="secondary" className="hover-lift">
-                <a href="#marketplace">Browse Items</a>
-              </Button>
+      {/* Netflix-style Featured Hero Section */}
+      {featuredItem && (
+        <section className="relative h-[70vh] md:h-[80vh] overflow-hidden">
+          {/* Background Image with Gradient Overlay */}
+          <div className="absolute inset-0">
+            {featuredItem.images && featuredItem.images.length > 0 ? (
+              <img
+                src={`${supabase.storage.from('item-images').getPublicUrl(featuredItem.images[0]).data.publicUrl}`}
+                alt={featuredItem.title}
+                className="w-full h-full object-cover"
+              />
             ) : (
-              <>
-                <Button asChild size="lg" variant="secondary" className="hover-lift">
-                  <a href="/auth">Get Started</a>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="bg-white/10 text-white border-white/30 hover:bg-white hover:text-primary backdrop-blur-sm hover-lift">
-                  <a href="#features">Learn More</a>
-                </Button>
-              </>
+              <div className="w-full h-full gradient-hero" />
             )}
+            <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
           </div>
-        </div>
-      </section>
+
+          {/* Content */}
+          <div className="relative h-full flex items-center">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+              <div className="max-w-2xl space-y-4 animate-fade-in-up">
+                <Badge variant="secondary" className="mb-2">Featured Item</Badge>
+                <h1 className="text-4xl md:text-6xl font-bold text-foreground drop-shadow-lg">
+                  {featuredItem.title}
+                </h1>
+                <p className="text-lg md:text-xl text-muted-foreground line-clamp-3 drop-shadow-md">
+                  {featuredItem.description}
+                </p>
+                <div className="flex items-center gap-4 text-2xl font-bold">
+                  <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                    ₹{featuredItem.price}
+                  </span>
+                  {featuredItem.profiles && (
+                    <span className="text-sm text-muted-foreground font-normal">
+                      by {featuredItem.profiles.full_name}
+                    </span>
+                  )}
+                </div>
+                <div className="flex gap-3 pt-4">
+                  <Button 
+                    size="lg" 
+                    variant="premium"
+                    onClick={() => navigate(`/item/${featuredItem.id}`)}
+                    className="gap-2"
+                  >
+                    <Info className="h-5 w-5" />
+                    View Details
+                  </Button>
+                  {user && user.id !== featuredItem.seller_id && (
+                    <Button 
+                      size="lg" 
+                      variant="outline"
+                      onClick={() => handleChatClick(featuredItem.id, featuredItem.seller_id)}
+                      className="gap-2 bg-background/50 backdrop-blur-sm"
+                    >
+                      <Play className="h-5 w-5" />
+                      Chat Now
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Features Section */}
       <section id="features" className="py-20 bg-gradient-to-b from-background to-muted/30">
@@ -184,63 +236,106 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Marketplace Section */}
-      <section id="marketplace" className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold text-center mb-4 animate-fade-in">Browse Marketplace</h2>
-          <p className="text-center text-muted-foreground mb-12 animate-fade-in">Discover amazing deals from your community</p>
-          
-          {/* Category Filter */}
-          <div className="flex flex-wrap justify-center gap-3 mb-12">
-            {categories.map((category, index) => (
-              <Badge
-                key={category.id}
-                variant={selectedCategory === category.id ? "default" : "outline"}
-                className="cursor-pointer px-5 py-2.5 text-sm hover-scale transition-all animate-fade-in"
-                style={{animationDelay: `${index * 0.1}s`}}
-                onClick={() => setSelectedCategory(category.id)}
-              >
-                <span className="mr-2 text-base">{category.icon}</span>
-                {category.name}
-              </Badge>
+      {/* Netflix-style Category Carousels */}
+      <section id="marketplace" className="py-12 space-y-12">
+        {loading ? (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="space-y-4">
+                <div className="h-8 w-48 bg-muted animate-pulse rounded" />
+                <div className="flex gap-4 overflow-hidden">
+                  {Array.from({ length: 5 }).map((_, j) => (
+                    <div key={j} className="min-w-[280px] h-[400px] bg-muted animate-pulse rounded-lg" />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
+        ) : (
+          <>
+            {/* All Items Section */}
+            {items.length > 0 && (
+              <div className="space-y-6">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <h2 className="text-2xl md:text-3xl font-bold mb-2">Trending Now</h2>
+                  <p className="text-muted-foreground mb-6">Popular items in your community</p>
+                </div>
+                <ScrollArea className="w-full">
+                  <div className="flex gap-4 px-4 sm:px-6 lg:px-8 pb-4">
+                    {items.slice(0, 10).map((item, index) => (
+                      <div 
+                        key={item.id} 
+                        className="min-w-[280px] animate-fade-in"
+                        style={{animationDelay: `${index * 0.05}s`}}
+                      >
+                        <ItemCard
+                          item={item}
+                          isWishlisted={wishlistedItems.has(item.id)}
+                          onWishlistChange={fetchWishlists}
+                          onChatClick={handleChatClick}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+              </div>
+            )}
 
-          {/* Items Grid */}
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="h-96 bg-muted animate-pulse rounded-lg" />
-              ))}
-            </div>
-          ) : items.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {items.map((item) => (
-                <ItemCard
-                  key={item.id}
-                  item={item}
-                  isWishlisted={wishlistedItems.has(item.id)}
-                  onWishlistChange={fetchWishlists}
-                  onChatClick={handleChatClick}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground text-lg">
-                {selectedCategory === 'all' 
-                  ? 'No items available at the moment' 
-                  : `No ${selectedCategory} items available`
-                }
-              </p>
-              {user && (
-                <Button asChild className="mt-4">
-                  <a href="/sell">List Your First Item</a>
-                </Button>
-              )}
-            </div>
-          )}
-        </div>
+            {/* Category-wise Sections */}
+            {categories.filter(cat => cat.id !== 'all').map((category) => {
+              const categoryItems = getCategoryItems(category.id);
+              if (categoryItems.length === 0) return null;
+
+              return (
+                <div key={category.id} className="space-y-6">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-2 flex items-center gap-2">
+                      <span className="text-3xl">{category.icon}</span>
+                      {category.name}
+                    </h2>
+                    <p className="text-muted-foreground">Browse {category.name.toLowerCase()} from your neighbors</p>
+                  </div>
+                  <ScrollArea className="w-full">
+                    <div className="flex gap-4 px-4 sm:px-6 lg:px-8 pb-4">
+                      {categoryItems.slice(0, 10).map((item, index) => (
+                        <div 
+                          key={item.id} 
+                          className="min-w-[280px] animate-fade-in"
+                          style={{animationDelay: `${index * 0.05}s`}}
+                        >
+                          <ItemCard
+                            item={item}
+                            isWishlisted={wishlistedItems.has(item.id)}
+                            onWishlistChange={fetchWishlists}
+                            onChatClick={handleChatClick}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                  </ScrollArea>
+                </div>
+              );
+            })}
+
+            {/* Empty State */}
+            {items.length === 0 && (
+              <div className="text-center py-20 max-w-7xl mx-auto px-4">
+                <div className="text-6xl mb-4">📦</div>
+                <h3 className="text-2xl font-bold mb-2">No Items Yet</h3>
+                <p className="text-muted-foreground mb-6">
+                  Be the first to list an item in your community!
+                </p>
+                {user && (
+                  <Button asChild size="lg" variant="premium">
+                    <a href="/sell">List Your First Item</a>
+                  </Button>
+                )}
+              </div>
+            )}
+          </>
+        )}
       </section>
     </div>
   );

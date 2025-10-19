@@ -119,24 +119,31 @@ export function ItemCard({ item, isWishlisted = false, onWishlistChange, onChatC
   };
 
   return (
-    <Card className="h-full flex flex-col group hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 overflow-hidden">
+    <Card className="h-full flex flex-col group hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 overflow-hidden border-2 hover:border-primary/50">
       <CardContent className="p-0">
         <div 
           className="cursor-pointer relative overflow-hidden" 
           onClick={() => navigate(`/item/${item.id}`)}
         >
           {item.images && item.images.length > 0 ? (
-            <img
-              src={`${supabase.storage.from('item-images').getPublicUrl(item.images[0]).data.publicUrl}`}
-              alt={item.title}
-              className="w-full h-48 object-cover rounded-t-lg group-hover:scale-110 transition-transform duration-500"
-            />
+            <>
+              <img
+                src={`${supabase.storage.from('item-images').getPublicUrl(item.images[0]).data.publicUrl}`}
+                alt={item.title}
+                className="w-full h-48 object-cover rounded-t-lg group-hover:scale-110 transition-transform duration-700"
+              />
+              {/* Netflix-style overlay with info */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4">
+                <p className="text-white text-sm font-medium line-clamp-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                  {item.description}
+                </p>
+              </div>
+            </>
           ) : (
-            <div className="w-full h-48 bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center rounded-t-lg">
+            <div className="w-full h-48 bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center rounded-t-lg group-hover:from-primary/20 group-hover:to-accent/20 transition-all duration-300">
               <span className="text-muted-foreground">No image</span>
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
         
         <div className="p-4 space-y-3">
