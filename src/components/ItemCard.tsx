@@ -119,31 +119,32 @@ export function ItemCard({ item, isWishlisted = false, onWishlistChange, onChatC
   };
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col group hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 overflow-hidden">
       <CardContent className="p-0">
         <div 
-          className="cursor-pointer" 
+          className="cursor-pointer relative overflow-hidden" 
           onClick={() => navigate(`/item/${item.id}`)}
         >
           {item.images && item.images.length > 0 ? (
             <img
               src={`${supabase.storage.from('item-images').getPublicUrl(item.images[0]).data.publicUrl}`}
               alt={item.title}
-              className="w-full h-48 object-cover rounded-t-lg hover:opacity-90 transition-opacity"
+              className="w-full h-48 object-cover rounded-t-lg group-hover:scale-110 transition-transform duration-500"
             />
           ) : (
-            <div className="w-full h-48 bg-muted flex items-center justify-center rounded-t-lg hover:bg-muted/80 transition-colors">
+            <div className="w-full h-48 bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center rounded-t-lg">
               <span className="text-muted-foreground">No image</span>
             </div>
           )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
         
         <div className="p-4 space-y-3">
-          <div className="flex justify-between items-start">
-            <h3 className="font-semibold text-lg line-clamp-2">{item.title}</h3>
+          <div className="flex justify-between items-start gap-2">
+            <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors">{item.title}</h3>
             <Badge 
               variant="secondary" 
-              className={categoryColors[item.category as keyof typeof categoryColors]}
+              className={`${categoryColors[item.category as keyof typeof categoryColors]} transition-transform group-hover:scale-110`}
             >
               {item.category}
             </Badge>
@@ -152,9 +153,9 @@ export function ItemCard({ item, isWishlisted = false, onWishlistChange, onChatC
           <p className="text-muted-foreground text-sm line-clamp-2">{item.description}</p>
           
           <div className="flex justify-between items-center">
-            <span className="text-2xl font-bold text-primary">₹{item.price}</span>
+            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">₹{item.price}</span>
             {item.status === 'sold' && (
-              <Badge variant="destructive">Sold</Badge>
+              <Badge variant="destructive" className="animate-pulse">Sold</Badge>
             )}
           </div>
 
