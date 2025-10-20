@@ -137,52 +137,55 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background gradient-mesh scroll-smooth">
       {/* Netflix-style Featured Hero Section */}
       {featuredItem && (
-        <section className="relative h-[70vh] md:h-[80vh] overflow-hidden">
-          {/* Background Image with Gradient Overlay */}
+        <section className="relative h-[75vh] md:h-[85vh] overflow-hidden">
+          {/* Background Image with Advanced Gradient Overlay */}
           <div className="absolute inset-0">
             {featuredItem.images && featuredItem.images.length > 0 ? (
               <img
                 src={`${supabase.storage.from('item-images').getPublicUrl(featuredItem.images[0]).data.publicUrl}`}
                 alt={featuredItem.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
               />
             ) : (
-              <div className="w-full h-full gradient-hero" />
+              <div className="w-full h-full gradient-hero animate-shimmer" />
             )}
-            <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10" />
           </div>
 
           {/* Content */}
           <div className="relative h-full flex items-center">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-              <div className="max-w-2xl space-y-4 animate-fade-in-up">
-                <Badge variant="secondary" className="mb-2">Featured Item</Badge>
-                <h1 className="text-4xl md:text-6xl font-bold text-foreground drop-shadow-lg">
+              <div className="max-w-2xl space-y-6 animate-fade-in-up">
+                <Badge variant="secondary" className="mb-2 shadow-glow animate-pulse-glow backdrop-blur-sm">
+                  ✨ Featured Item
+                </Badge>
+                <h1 className="text-5xl md:text-7xl font-bold text-foreground drop-shadow-2xl animate-scale-in">
                   {featuredItem.title}
                 </h1>
-                <p className="text-lg md:text-xl text-muted-foreground line-clamp-3 drop-shadow-md">
+                <p className="text-lg md:text-2xl text-muted-foreground/90 line-clamp-3 drop-shadow-lg leading-relaxed">
                   {featuredItem.description}
                 </p>
-                <div className="flex items-center gap-4 text-2xl font-bold">
-                  <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                <div className="flex items-center gap-4">
+                  <span className="text-3xl md:text-4xl font-bold text-gradient animate-glow">
                     ₹{featuredItem.price}
                   </span>
                   {featuredItem.profiles && (
-                    <span className="text-sm text-muted-foreground font-normal">
+                    <span className="text-base text-muted-foreground/80 font-medium">
                       by {featuredItem.profiles.full_name}
                     </span>
                   )}
                 </div>
-                <div className="flex gap-3 pt-4">
+                <div className="flex flex-wrap gap-4 pt-6">
                   <Button 
                     size="lg" 
                     variant="premium"
                     onClick={() => navigate(`/item/${featuredItem.id}`)}
-                    className="gap-2"
+                    className="gap-2 text-lg px-8 shadow-xl shadow-primary/30 hover:shadow-2xl hover:shadow-primary/40 transition-all"
                   >
                     <Info className="h-5 w-5" />
                     View Details
@@ -192,7 +195,7 @@ export default function Home() {
                       size="lg" 
                       variant="outline"
                       onClick={() => handleChatClick(featuredItem.id, featuredItem.seller_id)}
-                      className="gap-2 bg-background/50 backdrop-blur-sm"
+                      className="gap-2 text-lg px-8 glass-effect hover:bg-primary/10 transition-all"
                     >
                       <Play className="h-5 w-5" />
                       Chat Now
@@ -206,30 +209,43 @@ export default function Home() {
       )}
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-gradient-to-b from-background to-muted/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold text-center mb-4 animate-fade-in">Why Choose SocietyMart?</h2>
-          <p className="text-center text-muted-foreground mb-12 animate-fade-in">Experience the future of community commerce</p>
+      <section id="features" className="py-24 bg-gradient-to-b from-background via-muted/20 to-background relative overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-float" style={{animationDelay: '2s'}} />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl md:text-6xl font-bold mb-6 text-gradient animate-fade-in">
+              Why Choose SocietyMart?
+            </h2>
+            <p className="text-xl text-muted-foreground animate-fade-in max-w-2xl mx-auto">
+              Experience the future of community commerce with cutting-edge features
+            </p>
+          </div>
+          
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center p-8 rounded-xl bg-card hover-lift group">
-              <div className="text-5xl mb-4 transition-transform group-hover:scale-110">🔒</div>
-              <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">Secure & Trusted</h3>
-              <p className="text-muted-foreground">
-                Verified users from your community ensure safe transactions
+            <div className="text-center p-10 rounded-2xl bg-card shadow-card hover-lift group border border-border/50 transition-all duration-500">
+              <div className="text-6xl mb-6 transition-all duration-500 group-hover:scale-125 group-hover:rotate-12 animate-bounce-subtle">🔒</div>
+              <h3 className="text-2xl font-bold mb-4 group-hover:text-gradient transition-all">Secure & Trusted</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Verified users from your community ensure safe and reliable transactions every time
               </p>
             </div>
-            <div className="text-center p-8 rounded-xl bg-card hover-lift group">
-              <div className="text-5xl mb-4 transition-transform group-hover:scale-110">💬</div>
-              <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">Real-time Chat</h3>
-              <p className="text-muted-foreground">
-                Connect instantly with buyers and sellers in your area
+            
+            <div className="text-center p-10 rounded-2xl bg-card shadow-card hover-lift group border border-border/50 transition-all duration-500" style={{animationDelay: '0.1s'}}>
+              <div className="text-6xl mb-6 transition-all duration-500 group-hover:scale-125 group-hover:rotate-12 animate-bounce-subtle" style={{animationDelay: '0.5s'}}>💬</div>
+              <h3 className="text-2xl font-bold mb-4 group-hover:text-gradient transition-all">Real-time Chat</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Connect instantly with buyers and sellers through our seamless messaging system
               </p>
             </div>
-            <div className="text-center p-8 rounded-xl bg-card hover-lift group">
-              <div className="text-5xl mb-4 transition-transform group-hover:scale-110">📱</div>
-              <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">Easy to Use</h3>
-              <p className="text-muted-foreground">
-                Simple interface designed for quick buying and selling
+            
+            <div className="text-center p-10 rounded-2xl bg-card shadow-card hover-lift group border border-border/50 transition-all duration-500" style={{animationDelay: '0.2s'}}>
+              <div className="text-6xl mb-6 transition-all duration-500 group-hover:scale-125 group-hover:rotate-12 animate-bounce-subtle" style={{animationDelay: '1s'}}>📱</div>
+              <h3 className="text-2xl font-bold mb-4 group-hover:text-gradient transition-all">Easy to Use</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Intuitive interface designed for effortless browsing, listing, and purchasing
               </p>
             </div>
           </div>
@@ -257,8 +273,8 @@ export default function Home() {
             {items.length > 0 && (
               <div className="space-y-6">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <h2 className="text-2xl md:text-3xl font-bold mb-2">Trending Now</h2>
-                  <p className="text-muted-foreground mb-6">Popular items in your community</p>
+                  <h2 className="text-3xl md:text-4xl font-bold mb-2 text-gradient">Trending Now</h2>
+                  <p className="text-lg text-muted-foreground mb-6">Popular items in your community</p>
                 </div>
                 <ScrollArea className="w-full">
                   <div className="flex gap-4 px-4 sm:px-6 lg:px-8 pb-4">
@@ -290,11 +306,11 @@ export default function Home() {
               return (
                 <div key={category.id} className="space-y-6">
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-2xl md:text-3xl font-bold mb-2 flex items-center gap-2">
-                      <span className="text-3xl">{category.icon}</span>
-                      {category.name}
+                    <h2 className="text-3xl md:text-4xl font-bold mb-2 flex items-center gap-3">
+                      <span className="text-4xl animate-bounce-subtle">{category.icon}</span>
+                      <span className="text-gradient">{category.name}</span>
                     </h2>
-                    <p className="text-muted-foreground">Browse {category.name.toLowerCase()} from your neighbors</p>
+                    <p className="text-lg text-muted-foreground">Browse {category.name.toLowerCase()} from your neighbors</p>
                   </div>
                   <ScrollArea className="w-full">
                     <div className="flex gap-4 px-4 sm:px-6 lg:px-8 pb-4">
@@ -321,14 +337,14 @@ export default function Home() {
 
             {/* Empty State */}
             {items.length === 0 && (
-              <div className="text-center py-20 max-w-7xl mx-auto px-4">
-                <div className="text-6xl mb-4">📦</div>
-                <h3 className="text-2xl font-bold mb-2">No Items Yet</h3>
-                <p className="text-muted-foreground mb-6">
-                  Be the first to list an item in your community!
+              <div className="text-center py-32 max-w-3xl mx-auto px-4">
+                <div className="text-8xl mb-8 animate-bounce-subtle">📦</div>
+                <h3 className="text-4xl font-bold mb-4 text-gradient">No Items Yet</h3>
+                <p className="text-xl text-muted-foreground mb-10 leading-relaxed">
+                  Be the first to list an item in your community and start the marketplace revolution!
                 </p>
                 {user && (
-                  <Button asChild size="lg" variant="premium">
+                  <Button asChild size="lg" variant="premium" className="text-lg px-10 py-6 shadow-xl shadow-primary/30">
                     <a href="/sell">List Your First Item</a>
                   </Button>
                 )}
