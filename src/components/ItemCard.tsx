@@ -119,7 +119,7 @@ export function ItemCard({ item, isWishlisted = false, onWishlistChange, onChatC
   };
 
   return (
-    <Card className="h-full flex flex-col group hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 overflow-hidden border-2 hover:border-primary/50">
+    <Card className="h-full flex flex-col group hover:shadow-hover hover:-translate-y-3 transition-all duration-500 overflow-hidden border border-border/50 hover:border-primary/50 bg-card/50 backdrop-blur-sm">
       <CardContent className="p-0">
         <div 
           className="cursor-pointer relative overflow-hidden" 
@@ -148,10 +148,10 @@ export function ItemCard({ item, isWishlisted = false, onWishlistChange, onChatC
         
         <div className="p-4 space-y-3">
           <div className="flex justify-between items-start gap-2">
-            <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors">{item.title}</h3>
+            <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-gradient transition-all duration-300">{item.title}</h3>
             <Badge 
               variant="secondary" 
-              className={`${categoryColors[item.category as keyof typeof categoryColors]} transition-transform group-hover:scale-110`}
+              className={`${categoryColors[item.category as keyof typeof categoryColors]} transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg`}
             >
               {item.category}
             </Badge>
@@ -187,9 +187,9 @@ export function ItemCard({ item, isWishlisted = false, onWishlistChange, onChatC
             size="sm"
             onClick={handleWishlistToggle}
             disabled={wishlistLoading}
-            className="flex-1"
+            className="flex-1 group/btn transition-all hover:scale-105"
           >
-            <Heart className={`h-4 w-4 mr-1 ${isWishlisted ? 'fill-current' : ''}`} />
+            <Heart className={`h-4 w-4 mr-1 transition-transform group-hover/btn:scale-125 ${isWishlisted ? 'fill-current text-red-500' : ''}`} />
             {isWishlisted ? 'Saved' : 'Save'}
           </Button>
           
@@ -197,9 +197,9 @@ export function ItemCard({ item, isWishlisted = false, onWishlistChange, onChatC
             <Button
               size="sm"
               onClick={handleChatClick}
-              className="flex-1"
+              className="flex-1 group/btn transition-all hover:scale-105 shadow-md hover:shadow-lg"
             >
-              <MessageCircle className="h-4 w-4 mr-1" />
+              <MessageCircle className="h-4 w-4 mr-1 transition-transform group-hover/btn:scale-125" />
               Chat
             </Button>
           )}
