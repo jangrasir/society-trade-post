@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { ChevronLeft, ChevronRight, Play, Info, Sparkles, Zap, Shield, Users, TrendingUp, ShoppingBag } from 'lucide-react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { Hero3DScene } from '@/components/Hero3DScene';
 
 const categories = [
   { id: 'all', name: 'All', icon: '🛍️' },
@@ -138,22 +139,25 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background gradient-mesh scroll-smooth">
-      {/* Netflix-style Featured Hero Section */}
+      {/* Netflix-style Featured Hero Section with 3D */}
       {featuredItem && (
         <section className="relative h-[75vh] md:h-[85vh] overflow-hidden">
+          {/* 3D Scene Background */}
+          <Hero3DScene />
+          
           {/* Background Image with Advanced Gradient Overlay */}
           <div className="absolute inset-0">
             {featuredItem.images && featuredItem.images.length > 0 ? (
               <img
                 src={`${supabase.storage.from('item-images').getPublicUrl(featuredItem.images[0]).data.publicUrl}`}
                 alt={featuredItem.title}
-                className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                className="w-full h-full object-cover transition-transform duration-700 hover:scale-105 opacity-30"
               />
             ) : (
-              <div className="w-full h-full gradient-hero animate-shimmer" />
+              <div className="w-full h-full gradient-hero animate-shimmer opacity-20" />
             )}
-            <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/60" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10" />
           </div>
 
