@@ -8,11 +8,14 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Edit, Trash2, Eye, Plus } from 'lucide-react';
+import EditItemDialog from '@/components/EditItemDialog';
 
 export default function Dashboard() {
   const [myItems, setMyItems] = useState<any[]>([]);
   const [stats, setStats] = useState({ total: 0, sold: 0, available: 0 });
   const [loading, setLoading] = useState(true);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -96,6 +99,11 @@ export default function Dashboard() {
       });
       fetchMyItems();
     }
+  };
+
+  const handleEditItem = (item: any) => {
+    setSelectedItem(item);
+    setEditDialogOpen(true);
   };
 
   return (
@@ -205,6 +213,14 @@ export default function Dashboard() {
                       <Button
                         variant="outline"
                         size="sm"
+                        onClick={() => handleEditItem(item)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => navigate(`/item/${item.id}`)}
                       >
                         <Eye className="h-4 w-4" />
@@ -233,6 +249,13 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      <EditItemDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        item={selectedItem}
+        onSuccess={fetchMyItems}
+      />
     </div>
   );
 }
