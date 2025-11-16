@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { ShoppingBag, MessageCircle, User, LogOut, Plus, Search } from 'lucide-react';
@@ -12,6 +12,12 @@ import {
 
 export function Navbar() {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   return (
     <nav className="sticky top-0 z-50 glass-effect border-b border-border/50 backdrop-blur-xl">
@@ -66,7 +72,7 @@ export function Navbar() {
                       <Link to="/wishlist">Wishlist</Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer text-destructive">
+                    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
                       <LogOut className="h-4 w-4 mr-2" />
                       Sign Out
                     </DropdownMenuItem>
