@@ -147,18 +147,30 @@ export default function Home() {
           
           {/* Background Image with Advanced Gradient Overlay */}
           <div className="absolute inset-0">
-            {featuredItem.images && featuredItem.images.length > 0 ? (
-              <img
-                src={`${supabase.storage.from('item-images').getPublicUrl(featuredItem.images[0]).data.publicUrl}`}
-                alt={featuredItem.title}
-                className="w-full h-full object-cover transition-transform duration-700 hover:scale-105 opacity-30"
-              />
+            {featuredItem.images && Array.isArray(featuredItem.images) && featuredItem.images.length > 0 ? (
+              <>
+                {(() => {
+                  const imageUrl = supabase.storage.from('item-images').getPublicUrl(featuredItem.images[0]).data.publicUrl;
+                  return (
+                    <img
+                      src={imageUrl}
+                      alt={featuredItem.title}
+                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-105 opacity-60"
+                      onLoad={() => console.log('✅ Featured image loaded:', imageUrl)}
+                      onError={(e) => {
+                        console.error('❌ Failed to load image:', imageUrl);
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  );
+                })()}
+              </>
             ) : (
               <div className="w-full h-full gradient-hero animate-shimmer opacity-20" />
             )}
-            <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/60" />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10" />
+            <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-background/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
           </div>
 
           {/* Content */}

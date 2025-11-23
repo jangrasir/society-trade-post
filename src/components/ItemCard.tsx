@@ -128,9 +128,13 @@ export function ItemCard({ item, isWishlisted = false, onWishlistChange, onChatC
           {item.images && item.images.length > 0 ? (
             <>
               <img
-                src={`${supabase.storage.from('item-images').getPublicUrl(item.images[0]).data.publicUrl}`}
+                src={supabase.storage.from('item-images').getPublicUrl(item.images[0]).data.publicUrl}
                 alt={item.title}
                 className="w-full h-48 object-cover rounded-t-lg group-hover:scale-110 transition-transform duration-700"
+                onError={(e) => {
+                  console.error('Failed to load item image:', item.images[0]);
+                  e.currentTarget.style.display = 'none';
+                }}
               />
               {/* Netflix-style overlay with info */}
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4">
