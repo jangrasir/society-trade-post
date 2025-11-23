@@ -138,9 +138,13 @@ export default function Chats() {
                   <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden flex-shrink-0">
                     {chat.items.images?.[0] ? (
                       <img
-                        src={chat.items.images[0]}
+                        src={supabase.storage.from('item-images').getPublicUrl(chat.items.images[0]).data.publicUrl}
                         alt={chat.items.title}
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          console.error('Failed to load chat item image:', chat.items.images[0]);
+                          e.currentTarget.style.display = 'none';
+                        }}
                       />
                     ) : (
                       <div className="w-full h-full bg-muted" />
