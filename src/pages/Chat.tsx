@@ -23,6 +23,12 @@ interface Chat {
     title: string;
     price: number;
   };
+  buyer_profile?: {
+    full_name: string;
+  };
+  seller_profile?: {
+    full_name: string;
+  };
 }
 
 export default function Chat() {
@@ -33,6 +39,7 @@ export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isOnline, setIsOnline] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -61,6 +68,12 @@ export default function Chat() {
         items (
           title,
           price
+        ),
+        buyer_profile:profiles!chats_buyer_id_fkey (
+          full_name
+        ),
+        seller_profile:profiles!chats_seller_id_fkey (
+          full_name
         )
       `)
       .eq('id', chatId)
@@ -77,6 +90,36 @@ export default function Chat() {
     }
 
     setChat(data);
+
+    // Set up presence tracking
+    const otherUserId = data.buyer_id === user?.id ? data.seller_id : data.buyer_id;
+    const presenceChannel = supabase.channel(`presence:${chatId}`)
+      .on('presence', { event: 'sync' }, () => {
+        const state = presenceChannel.presenceState();
+        const isUserOnline = Object.values(state).some(
+          (presences: any) => presences.some((p: any) => p.user_id === otherUserId)
+        );
+        setIsOnline(isUserOnline);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await presenceChannel.track({
+            user_id: user?.id,
+            online_at: new Date().toISOString(),
+          });
+        }
+      });
+
+    return () => {
+      presenceChannel.unsubscribe();
+    };
+  };
+
+  const getOtherUserName = () => {
+    if (!chat || !user) return 'User';
+    return chat.buyer_id === user.id 
+      ? chat.seller_profile?.full_name || 'Seller'
+      : chat.buyer_profile?.full_name || 'Buyer';
   };
 
   const fetchMessages = async () => {
@@ -162,9 +205,17 @@ export default function Chat() {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div>
-            <h1 className="font-semibold">{chat?.items.title}</h1>
-            <p className="text-sm text-muted-foreground">₹{chat?.items.price}</p>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <h1 className="font-semibold">{getOtherUserName()}</h1>
+              <div className="flex items-center gap-1">
+                <div className={`h-2 w-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-gray-400'}`} />
+                <span className="text-xs text-muted-foreground">
+                  {isOnline ? 'Online' : 'Offline'}
+                </span>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground">{chat?.items.title} • ₹{chat?.items.price}</p>
           </div>
         </div>
       </div>
