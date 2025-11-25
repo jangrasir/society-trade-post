@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, MessageCircle, User, LogOut, Plus, Search } from 'lucide-react';
+import { ShoppingBag, MessageCircle, User, LogOut, Plus, Search, Heart } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,6 +37,12 @@ export function Navbar() {
             {user ? (
               <>
                 <Button asChild variant="ghost" size="sm" className="hover:bg-primary/10 transition-all">
+                  <Link to="/" className="gap-2">
+                    <ShoppingBag className="h-4 w-4" />
+                    <span className="hidden sm:inline">Home</span>
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" size="sm" className="hover:bg-primary/10 transition-all">
                   <Link to="/search" className="gap-2">
                     <Search className="h-4 w-4" />
                     <span className="hidden sm:inline">Search</span>
@@ -45,7 +51,13 @@ export function Navbar() {
                 <Button asChild variant="premium" size="sm" className="shadow-lg shadow-primary/25">
                   <Link to="/sell" className="gap-2">
                     <Plus className="h-4 w-4" />
-                    <span className="hidden sm:inline">Sell</span>
+                    <span className="hidden sm:inline">Sell Item</span>
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" size="sm" className="hover:bg-primary/10 transition-all">
+                  <Link to="/wishlist" className="gap-2">
+                    <Heart className="h-4 w-4" />
+                    <span className="hidden sm:inline">Wishlist</span>
                   </Link>
                 </Button>
                 <Button asChild variant="ghost" size="sm" className="hover:bg-primary/10 transition-all">
@@ -67,9 +79,6 @@ export function Navbar() {
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className="cursor-pointer">
                       <Link to="/profile">Edit Profile</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild className="cursor-pointer">
-                      <Link to="/wishlist">Wishlist</Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
