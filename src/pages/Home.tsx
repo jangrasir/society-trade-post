@@ -155,7 +155,7 @@ export default function Home() {
                     <img
                       src={imageUrl}
                       alt={featuredItem.title}
-                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-105 opacity-60"
+                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-105 opacity-75"
                       onLoad={() => console.log('✅ Featured image loaded:', imageUrl)}
                       onError={(e) => {
                         console.error('❌ Failed to load image:', imageUrl);
@@ -168,9 +168,9 @@ export default function Home() {
             ) : (
               <div className="w-full h-full gradient-hero animate-shimmer opacity-20" />
             )}
-            <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-background/40 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
+            <div className="absolute inset-0 bg-gradient-to-r from-background/50 via-background/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-background/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/3 via-transparent to-accent/3" />
           </div>
 
           {/* Content */}
