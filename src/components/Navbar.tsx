@@ -89,14 +89,40 @@ export function Navbar() {
                 </DropdownMenu>
               </>
             ) : (
-              <div className="flex items-center space-x-2">
-                <Button asChild variant="ghost" size="sm" className="hover:bg-primary/10">
-                  <Link to="/auth">Sign In</Link>
+              <>
+                <Button asChild variant="ghost" size="sm" className="hover:bg-primary/10 transition-all">
+                  <Link to="/" className="gap-2">
+                    <ShoppingBag className="h-4 w-4" />
+                    <span className="hidden sm:inline">Home</span>
+                  </Link>
                 </Button>
-                <Button asChild variant="premium" size="sm" className="shadow-lg shadow-primary/25">
-                  <Link to="/auth">Sign Up</Link>
+                <Button asChild variant="ghost" size="sm" className="hover:bg-primary/10 transition-all">
+                  <Link to="/search" className="gap-2">
+                    <Search className="h-4 w-4" />
+                    <span className="hidden sm:inline">Search</span>
+                  </Link>
                 </Button>
-              </div>
+                <Button asChild variant="ghost" size="sm" className="hover:bg-primary/10 transition-all">
+                  <Link to="/sell" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    <span className="hidden sm:inline">Sell Item</span>
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" size="sm" className="hover:bg-primary/10 transition-all">
+                  <Link to="/wishlist" className="gap-2">
+                    <Heart className="h-4 w-4" />
+                    <span className="hidden sm:inline">Wishlist</span>
+                  </Link>
+                </Button>
+                <div className="flex items-center space-x-2 ml-2 pl-2 border-l border-border/50">
+                  <Button asChild variant="ghost" size="sm" className="hover:bg-primary/10">
+                    <Link to="/auth">Sign In</Link>
+                  </Button>
+                  <Button asChild variant="premium" size="sm" className="shadow-lg shadow-primary/25">
+                    <Link to="/auth">Sign Up</Link>
+                  </Button>
+                </div>
+              </>
             )}
           </div>
         </div>
